@@ -34,4 +34,19 @@ checkin_data <- readRDS("checkin_data.rds")
 user_data <- readRDS("user_data.rds")
 tip_data <- readRDS("tip_data.rds")
 
+# Exploring Data
+installed.packages()
+install.packages("tidyverse")
+library(tidyverse)
+install.packages("hexbin")
+library(hexbin)
 
+str(business_data)
+str(review_data)
+str(user_data)
+
+attributeRestaurantsPriceRange2_counts <- table(business_data$attribute$RestaurantsPriceRange2)
+print(attributeRestaurantsPriceRange2_counts)
+
+
+colnames(business_data)
