@@ -1,5 +1,6 @@
 #Setting GitHub repository
-
+library(usethis)
+use_github()
 
 #Pre-Processing Yelp Academic Data for the Assignment
 library(jsonlite)

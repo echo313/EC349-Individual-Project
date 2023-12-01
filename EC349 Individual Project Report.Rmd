@@ -1,0 +1,24 @@
+---
+title: "EC349 Individual Project Report"
+author: "Hanjun Jin, 2105015"
+date: "2023-11-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+<br>
+
+#### Data Science Methodology
+
+To begin, I chose to implement John Rollin's Data Science Methodology; a 10-stage iterative process tailored for data-driven problem solving. This particular methodology aligns well with the demands of this project, given its focus on managing large data volumes, which fits our objective of accurately predicting user reviews from extensive data sets (Rollins, 2015).
+<br>
+
+```{r fig.align="center", out.width='600px', out.height='300px', echo=FALSE}
+knitr::include_graphics("C:/Users/jjune/OneDrive/Desktop/EC349 Data Science for Economists/EC349 Individual Project/Appendix/John Rollin's DS Methodology Figure.jpg")
+```
+
+In the following sections, I will highlight these 10 stages and their utilization in developing this project. This is with the exclusion of Deployment and Feedback, as they were incorporated into the methodology with  business application in mind, which is irrelevant for the 
+
