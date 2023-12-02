@@ -40,13 +40,61 @@ install.packages("tidyverse")
 library(tidyverse)
 install.packages("hexbin")
 library(hexbin)
+install.packages("dplyr")
+library(dplyr)
+
 
 str(business_data)
 str(review_data)
 str(user_data)
 
-attributeRestaurantsPriceRange2_counts <- table(business_data$attribute$RestaurantsPriceRange2)
+colnames(business_data)
+
+# Finding all values
+city_counts <- table(business_data$city, useNA = "ifany")
+print(city_counts)
+# too many cities
+
+stars_counts <- table(business_data$stars, useNA = "ifany")
+print(stars_counts)
+
+postal_code_counts <- table(business_data$postal_code, useNA = "ifany")
+print(postal_code_counts)
+# too many postal codes
+
+attributeByAppointmentOnly_counts <- table(business_data$attribute$ByAppointmentOnly, useNA = "ifany")
+print(attributeByAppointmentOnly_counts)
+
+attributeBusinessAcceptsCreditCards_counts <- table(business_data$attribute$BusinessAcceptsCreditCards, useNA = "ifany")
+print(attributeBusinessAcceptsCreditCards_counts)
+
+attributeBikeParking_counts <- table(business_data$attribute$BikeParking, useNA = "ifany")
+print(attributeBikeParking_counts)
+
+attributeRestaurantsPriceRange2_counts <- table(business_data$attribute$RestaurantsPriceRange2, useNA = "ifany")
 print(attributeRestaurantsPriceRange2_counts)
 
+attributeCoatCheck_counts <- table(business_data$attribute$CoatCheck, useNA = "ifany")
+print(attributeCoatCheck_counts)
 
-colnames(business_data)
+attributeRestaurantsTakeOut_counts <- table(business_data$attribute$RestaurantsTakeOut, useNA = "ifany")
+print(attributeRestaurantsTakeOut_counts)
+
+attributeRestaurantsDelivery_counts <- table(business_data$attribute$RestaurantsDelivery, useNA = "ifany")
+print(attributeRestaurantsDelivery_counts)
+
+attributeCaters_counts <- table(business_data$attribute$Caters, useNA = "ifany")
+print(attributeCaters_counts)
+
+business_data_clean <- business_data %>%
+  filter(!apply(attributes, 1, function(x) any(is.na(x))))
+
+str(business_data_clean)
+
+# This didn't work, took out all observations meaning either I take out this attribute variable 
+# or think of a different way to incorporate it
+
+
+friends_counts <- table(user_data$friends, useNA = "ifany")
+print(friends_counts)
+
