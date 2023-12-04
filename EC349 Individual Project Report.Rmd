@@ -77,13 +77,22 @@ In the following sections, I will highlight all relevant stages and their utiliz
 
 #### **Problem Understanding/Analytic Approach**
 
-This phase of the methodology involves accurately defining the task and identifying the appropriate analytic approach to be adopted. The assigned task was to use Yelp datasets to create a model predicting the User Reviews given by user *i* to business *j* in the test data. Given the ordinal nature of the 'stars', a regression model was the intuitive choice. This indicated the use of predictive analytics including regression models with shrinkage estimators and regression trees. Furthermore, the dataset provided is large and contains a variety of predictors, which indicates the need for a more flexible model as it would better capture a complex and potentially non-linear relationship. Inevitably, a more flexible model harms interpretability, but as I am only interested in prediction, this is not a significant concern. 
+This phase of the methodology involves accurately defining the task and identifying the appropriate analytic approach to be adopted. The assigned task was to use Yelp datasets to create a model predicting the User Reviews given by user *i* to business *j* in the test data. Given the ordinal nature of the 'stars', a regression model was the intuitive choice. This indicated the use of predictive analytics including regression models with shrinkage estimators and regression trees. Furthermore, the dataset provided is large and contains a variety of predictors, which indicates the need for a more flexible model as it would better capture a complex and potentially non-linear relationship. Inevitably, a more flexible model harms interpret ability, but as I am only interested in prediction, this is not a significant concern. 
 
 <br>
 <br>
 
 #### **Data Understanding/Preparation**
+
 The datasets were large 
+
+
+
+#### **Modelling/Evaluation**
+
+At first glance, the most significant predictor would be the review itself. However, as the review is comprised of text it becomes difficult to implement in a regression model. To 
+
+
 
 
 
