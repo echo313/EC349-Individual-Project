@@ -232,5 +232,43 @@ num_unique_categories <- length(unique_categories)
 print(num_unique_categories)
 # there are 1307 unique categories. 
 
+str(final_data)
 
+# changed to categories branch
+branch_data <- final_data
 
+# Your code to filter categories
+split_categories <- strsplit(branch_data$categories, ",")
+all_categories <- trimws(unlist(split_categories))
+category_counts <- table(all_categories)
+threshold <- nrow(branch_data) / 50
+significant_categories <- names(category_counts[category_counts >= threshold])
+
+filter_categories <- function(category_list) {
+  filtered <- category_list[category_list %in% significant_categories]
+  return(paste(filtered, collapse = ", "))
+}
+
+branch_data$filtered_categories <- sapply(strsplit(branch_data$categories, ", "), filter_categories)
+
+head(final_data)
+head(branch_data)
+
+# Split the categories string into individual categories
+split_categories_branch <- strsplit(branch_data$filtered_categories, ",")
+all_categories_branch <- trimws(unlist(split_categories_branch))
+
+# Get unique categories
+unique_categories_branch <- unique(all_categories_branch)
+
+# Count the number of unique categories
+num_unique_categories_branch <- length(unique_categories_branch)
+
+# Print the number of unique categories
+print(num_unique_categories_branch)
+
+str(branch_data)
+
+final_data <- branch_data
+
+str(final_data)

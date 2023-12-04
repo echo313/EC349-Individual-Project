@@ -1,0 +1,62 @@
+---
+title: 'Individual Project: Instruction and Guidelines'
+author: "EC349 Data Science For Economists (2023/24)"
+date: "2023-11-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### A.Instructions
+
+The assignment consists of using data from Yelp to predict how users like different establishments. It consists of 5 separate datasets, with approximately 7 million reviews of over 150,000 businesses by almost 2 million users. The datasets are as follows: 
+
++ Data on the Businesses ("yelp_academic_dataset_business.json").
++ Data on User Reviews ("yelp_academic_dataset_review.json").
++ Data on User “Check-Ins" ("yelp_academic_dataset_checkin.json").
++ Data on the Users ("yelp_academic_dataset_user.json").
++ Data on User Tips ("yelp_academic_dataset_tips.json"). 
+
+While the dataset is available online [via this link](https://www.yelp.com/dataset), the version we provide [here](https://www.dropbox.com/scl/fo/13e7aqz02h04qmt1j4cbe/h?rlkey=4yehthpsox6ede2i133q4tylm&dl=0) is simplified, if you choose to use it. In particular, the data is provided in .json, but we are providing the code ["processing_yelp_data.R"](https://www.dropbox.com/scl/fo/13e7aqz02h04qmt1j4cbe/h/processing_yelp_data_students.R?rlkey=4yehthpsox6ede2i133q4tylm&dl=0) which you may use to transform the latter into R dataframes.
+
+    Please note that this dataset is provided for academic purposes only.
+    Please read the file YelpDataset_User_Agreement.pdf in the dropbox folder. 
+
+### B. Questions
+
+Your assignment is the following:  
+
+1. You must split the User Reviews data into a training and a test dataset. The test dataset must
+contain 10000 randomly drawn observations using the "caret" package in R (or the function "sample()") and a set seed equal
+to 1.  You can use a larger test data if you can.
+2.  You must use the training User Reviews data, as well as any of the other datasets, to predict the
+User Reviews for those 10000 test observations. That is, please predict the amount of "stars" given
+by user i to business j in the test data.  
+3. You will write up an analysis of your chosen method and of your results, in 1250 words.
+  + This analysis must describe the method you chose, why you chose it, using well-founded
+statistical explanations tailored for this application.
+  + It must also provide an analysis of your results, both in the training and in the test data.
+  + You must also provide us with your R code.
+
+### C. Submission Guidelines  
+
+1.	You will submit documents with your code (e.g., an R Script), an R Markdown File, and your final HTML file for your report.  
+2.	The R Script will detail your code and the Markdown file will house your 1250 words report.  
+3.	It would help to use Git as your version control and make continuous commits and pushes. When you submit your project, this can be used to track your effort and progress.  
+4.	The dataset we have provided for you is quite large. You will be unable to load it to GitHub unless you have an enterprise account (which costs significantly more than the free version). To circumvent this, you can limit your commits to all other files and exclude your dataset.   
+5.	Set your working directory at the beginning of your project/script/document. When we are marking, we can call our own dataset directly.   
+6.	The dataset is quite large. If you are having trouble loading the full dataset, we have provided a random sample of the dataset which is much smaller. You will find it in the subfolder “Smaller Datasets”.  
+7.	Your 1250 words exclude the following:  
+  + References  
+  + Tables  
+  + Figures and Graphs. 
+  
+  
+    NOTE: Check that codes in your script and markdown files run when submitting.  
+
+8. Your report also should include:  
+  + A brief description of your chosen DS methodology, why you chose this and how you applied it (not more than 150 words).  
+  + A statement on your most difficult challenge (if any) carrying out this project and how you overcame/handled it (not more than 200 words). 
