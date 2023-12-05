@@ -447,3 +447,14 @@ print(mse_cv_model_no_sentiment_1se)
 r_squared_cv_model_no_sentiment_1se <- 1 - sum((y_test - predictions_no_sentiment_1se)^2) / sum((y_test - mean(y_test))^2)
 print(r_squared_cv_model_no_sentiment_1se)
 # 0.4535993
+
+
+str(no_ids_test_data)
+
+
+library(ggplot2)
+ggplot(no_ids_test_data, aes(x = stars)) + 
+  geom_histogram(bins = 30, fill = "blue", color = "black") + 
+  theme_minimal() + 
+  labs(title = "Distribution of Stars", x = "Stars", y = "Count")
+

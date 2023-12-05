@@ -2,7 +2,9 @@
 title: "EC349 Individual Project Report"
 author: "Hanjun Jin, 2105015"
 date: "2023-11-29"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -84,6 +86,15 @@ This phase of the methodology involves accurately defining the task and identify
 #### **Data Understanding/Preparation**
 
 Data understanding/preparation involves exploring and cleaning the data so that it becomes ready for modelling.
+Initially, I had a look at the distribution of "stars". 
+
+```{r, echo=FALSE}
+knitr::include_graphics("C:/Users/jjune/OneDrive/Desktop/EC349 Data Science for Economists/EC349 Individual Project/Appendix/Stars distribution.png")
+```
+The distribution is skewed towards either end, with more intensity towards 5 stars. 
+<br>
+
+
 As I had a regression model in mind, it was integral that all variables were either dummy or continuous. The data was mostly clean, but there were variables where the data contained too many NA variables to add to the model. Most notably, the "attributes" column from business_data was a variable describing the various characteristics of the business. The variable had 4 unique observations: "True", "False", "NA" , "None". The majority of the observations were recorded as "NA", providing insufficient information for most observations. Furthermore, it was difficult to circumvent this using statistical methods as the answers themselves, "False", "NA", "None" were dubious in their meaning. The answers "None" and "False" could be argued to mean the same thing. Distributing "NA" mimicking the distribution observed from "True":"False" was also problematic as "NA" could also be interpreted as "False", skewing the true distribution. 
 
 <br>
@@ -119,13 +130,13 @@ To chose Lambda for my Lasso estimator, I implemented 10-fold cross validation. 
 
 <br>
 
-As my dataset was a subset of the larger dataset, my initial predictions were that the robust lambda chosen with the 1 s.e. criterion would outperform the min. MSE criterion, as I was concerned about overfitting. However, these metrics show that the training data was fairly similar to the test data and therefore performance was peaked with minimum MSE. Furthermore, the sentiment analysis was beneficial in predicting the "stars" of a review, despite its limitations. The best performing model, Lasso with minimum MSE criteria and sentiment analysis, was able to explain around 52% of the variance, which could be said to have a moderate performance. However, given that the scale of the data is from 1-5, a squared deviation of around 1 can be alarming. Especially since the ratings are given as integers, meaning the model could be said to be off by 25% on average. 
+As my dataset was a subset of the larger dataset, my initial predictions were that the robust lambda chosen with the 1 s.e. criterion would outperform the min. MSE criterion, as I was concerned about overfitting. However, these metrics show that the training data was fairly similar to the test data and therefore performance was peaked with minimum MSE. Furthermore, the sentiment analysis was beneficial in predicting the "stars" of a review, despite its limitations. The best performing model, Lasso with minimum MSE criteria and sentiment analysis, was able to explain around 52% of the variance, which could be said to have a moderate performance. However, given that the scale of the data is from 1-5, a squared deviation of around 1 can be alarming. Especially since the ratings are given as integers, meaning the model could be said to be off by 25% on average. Furthermore, when considering the star distribution, it may be that the model is more accurate for the higher ratings, but less accurate for lower ones. 
 
 <br>
 
 #### **Challenges**
 
-The most frustrating challenge was during data preparation, when I encountered that many of my columns had "NA" observations after merging. This was a problem as these "NA" values didn't appear in the raw dataset. The explanation for this occurrence was that the 2 "small" datasets that I had merged were subsets of a larger dataset. Which meant that there were missing user ID/review ID's for both datasets that were only present in  the larger dataset. To resolve, I merged the small review dataset with the original user dataset so that all user ID's in the review dataset were accounted for. However, I was unable to solve the root of my problems; the computational limitations of my device. This was a common theme throughout this project as many methods were implemented to circumvent the limited capabilities of my device only to cause different problems. Another example was when I had tried to compute the "categories" variable as one of the predictors for my model. Mindful that the predictor would produce many parameters I removed observations using the factor 50 rule for computational and statistical reasons. However, even with removal of variables, the matrix was too complex for my device and I was unable to implement it into my model. 
+The most frustrating challenge was during data preparation, when I encountered that many of my columns had "NA" observations after merging. This was a problem as these "NA" values didn't appear in the raw dataset. The explanation for this occurrence was that the 2 "small" datasets that I had merged were subsets of a larger dataset. Which meant that there were missing user ID/review ID's for both datasets that were only present in  the larger dataset. To resolve, I merged the small review dataset with the original user dataset so that all user ID's in the review dataset were accounted for. 
 
 <br>
 <br>

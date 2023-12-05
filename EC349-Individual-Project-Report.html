@@ -457,21 +457,25 @@ only interested in prediction, this is not a significant concern.</p>
 <div id="data-understandingpreparation" class="section level4">
 <h4><strong>Data Understanding/Preparation</strong></h4>
 <p>Data understanding/preparation involves exploring and cleaning the
-data so that it becomes ready for modelling. As I had a regression model
-in mind, it was integral that all variables were either dummy or
-continuous. The data was mostly clean, but there were variables where
-the data contained too many NA variables to add to the model. Most
-notably, the “attributes” column from business_data was a variable
-describing the various characteristics of the business. The variable had
-4 unique observations: “True”, “False”, “NA” , “None”. The majority of
-the observations were recorded as “NA”, providing insufficient
-information for most observations. Furthermore, it was difficult to
-circumvent this using statistical methods as the answers themselves,
-“False”, “NA”, “None” were dubious in their meaning. The answers “None”
-and “False” could be argued to mean the same thing. Distributing “NA”
-mimicking the distribution observed from “True”:“False” was also
-problematic as “NA” could also be interpreted as “False”, skewing the
-true distribution.</p>
+data so that it becomes ready for modelling. Initially, I had a look at
+the distribution of “stars”.</p>
+<p><img src="data:image/png;base64,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" /><!-- --> The
+distribution is skewed towards either end, with more intensity towards 5
+stars. <br></p>
+<p>As I had a regression model in mind, it was integral that all
+variables were either dummy or continuous. The data was mostly clean,
+but there were variables where the data contained too many NA variables
+to add to the model. Most notably, the “attributes” column from
+business_data was a variable describing the various characteristics of
+the business. The variable had 4 unique observations: “True”, “False”,
+“NA” , “None”. The majority of the observations were recorded as “NA”,
+providing insufficient information for most observations. Furthermore,
+it was difficult to circumvent this using statistical methods as the
+answers themselves, “False”, “NA”, “None” were dubious in their meaning.
+The answers “None” and “False” could be argued to mean the same thing.
+Distributing “NA” mimicking the distribution observed from
+“True”:“False” was also problematic as “NA” could also be interpreted as
+“False”, skewing the true distribution.</p>
 <p><br> <br></p>
 </div>
 <div id="modellingevaluation" class="section level4">
@@ -574,7 +578,9 @@ analysis, was able to explain around 52% of the variance, which could be
 said to have a moderate performance. However, given that the scale of
 the data is from 1-5, a squared deviation of around 1 can be alarming.
 Especially since the ratings are given as integers, meaning the model
-could be said to be off by 25% on average.</p>
+could be said to be off by 25% on average. Furthermore, when considering
+the star distribution, it may be that the model is more accurate for the
+higher ratings, but less accurate for lower ones.</p>
 <p><br></p>
 </div>
 <div id="challenges" class="section level4">
@@ -587,17 +593,7 @@ datasets that I had merged were subsets of a larger dataset. Which meant
 that there were missing user ID/review ID’s for both datasets that were
 only present in the larger dataset. To resolve, I merged the small
 review dataset with the original user dataset so that all user ID’s in
-the review dataset were accounted for. However, I was unable to solve
-the root of my problems; the computational limitations of my device.
-This was a common theme throughout this project as many methods were
-implemented to circumvent the limited capabilities of my device only to
-cause different problems. Another example was when I had tried to
-compute the “categories” variable as one of the predictors for my model.
-Mindful that the predictor would produce many parameters I removed
-observations using the factor 50 rule for computational and statistical
-reasons. However, even with removal of variables, the matrix was too
-complex for my device and I was unable to implement it into my
-model.</p>
+the review dataset were accounted for.</p>
 <p><br> <br></p>
 </div>
 <div id="references" class="section level4">
@@ -620,6 +616,7 @@ mining with R, A Tidy Approach.</em> Available at: <a href="https://www.tidytext
 Science.</em> IBM Analytics White Paper.</p>
 <p>Yelp (2023) <em>Yelp Dataset, Yelp dataset.</em> Available at: <a href="https://www.yelp.com/dataset/documentation/main" class="uri">https://www.yelp.com/dataset/documentation/main</a>
 (Accessed: 30 November 2023).</p>
+<p>Gihub Link: <a href="https://github.com/echo313/EC349-Individual-Project" class="uri">https://github.com/echo313/EC349-Individual-Project</a></p>
 </div>
 
 
