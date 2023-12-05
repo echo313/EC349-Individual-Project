@@ -43,411 +43,6 @@ library(dplyr)
 
 ls()
 
-
-str(business_data)
-str(review_data_small)
-str(user_data_small)
-
-
-summary(business_data)
-summary(review_data)
-summary(user_data)
-
-colnames(business_data)
-
-# Finding all values
-city_counts <- table(business_data$city, useNA = "ifany")
-print(city_counts)
-# too many cities
-
-stars_counts <- table(business_data$stars, useNA = "ifany")
-print(stars_counts)
-
-postal_code_counts <- table(business_data$postal_code, useNA = "ifany")
-print(postal_code_counts)
-# too many postal codes
-
-attributeByAppointmentOnly_counts <- table(business_data$attribute$ByAppointmentOnly, useNA = "ifany")
-print(attributeByAppointmentOnly_counts)
-
-attributeBusinessAcceptsCreditCards_counts <- table(business_data$attribute$BusinessAcceptsCreditCards, useNA = "ifany")
-print(attributeBusinessAcceptsCreditCards_counts)
-
-attributeBikeParking_counts <- table(business_data$attribute$BikeParking, useNA = "ifany")
-print(attributeBikeParking_counts)
-
-attributeRestaurantsPriceRange2_counts <- table(business_data$attribute$RestaurantsPriceRange2, useNA = "ifany")
-print(attributeRestaurantsPriceRange2_counts)
-
-attributeCoatCheck_counts <- table(business_data$attribute$CoatCheck, useNA = "ifany")
-print(attributeCoatCheck_counts)
-
-attributeRestaurantsTakeOut_counts <- table(business_data$attribute$RestaurantsTakeOut, useNA = "ifany")
-print(attributeRestaurantsTakeOut_counts)
-
-attributeRestaurantsDelivery_counts <- table(business_data$attribute$RestaurantsDelivery, useNA = "ifany")
-print(attributeRestaurantsDelivery_counts)
-
-attributeCaters_counts <- table(business_data$attribute$Caters, useNA = "ifany")
-print(attributeCaters_counts)
-
-business_data_clean <- business_data %>%
-  filter(!apply(attributes, 1, function(x) any(is.na(x))))
-
-str(business_data_clean)
-
-# This didn't work, took out all observations meaning either I take out this attribute variable 
-# or think of a different way to incorporate it
-
-install.packages("tidytext")
-install.packages("caret")
-library(tidytext)
-library(dplyr)
-library(caret)
-
-# Merging dataset
-
-combined_data <- merge(review_data_small, business_data, by = "business_id", all.x = TRUE)
-final_data <- merge(combined_data, user_data_small, by = "user_id", all.x = TRUE)
-
-str(final_data)
-
-head(final_data)
-
-library(dplyr)
-glimpse(final_data)
-
-# Checking the format of the final_data
-
-set.seed(1)  # for reproducibility
-
-# Sample 6 unique business IDs
-sampled_business_ids <- sample(unique(final_data$business_id), 6)
-
-# Sample 6 unique review IDs
-sampled_review_ids <- sample(unique(final_data$review_id), 6)
-
-# Sample 6 unique user IDs
-sampled_user_ids <- sample(unique(final_data$user_id), 6)
-
-library(dplyr)
-
-# Filter the data
-sampled_data <- final_data %>%
-  filter(business_id %in% sampled_business_ids |
-           review_id %in% sampled_review_ids |
-           user_id %in% sampled_user_ids)
-
-View(sampled_data)
-
-# The final_data has been merged correctly. Now I can set 'stars' as the dependent variable. 
-
-# Starting Data prep
-
-city_counts <- table(final_data$city)
-
-# Print the table of city counts
-print(city_counts)
-
-# too many observations to set as predictors, would require too many dummies, so remove columns
-# Too many NA's in attributes, so exclude
-# Hours is also an over complicated variable
-# Date is character variable
-final_data <- select(final_data, -name.x,-name.y, -address, -city)
-
-final_data <- select(final_data, -postal_code, -attributes, -hours,-date)
-
-is_open_counts <- table(final_data$is_open)
-print(is_open_counts)
-
-# hours_counts <- table(final_data$hours)
-# print(hours_counts)
-# Above code didn't work as the table was too large
-
-# Changing 'friends' to count number of 'friends' instead
-
-# final_data$friend_count <- sapply(final_data$friends, length)
-# head(final_data$friend_count)
-# tail(final_data$friend_count)
-# The above code didn't work properly, too many NA's, which would then count as 1 friend.. 
-
-str(final_data$friends[1])
-str(final_data$friends[1:10])
-friends_na_proportion <- sum(is.na(final_data$friends)) / nrow(final_data)
-print(friends_na_proportion)
-# The above code was used to find out how many of the observations of friends were NA's
-
-# Define a custom function
-count_friends <- function(friends) {
-  if (is.na(friends)) {
-    # Return 0 if the entry is NA
-    return(0)
-  } else {
-    # Assuming each entry is a list or vector of friends, return its length
-    return(length(friends))
-  }
-}
-
-# Apply the function to the friends column
-final_data$friend_count <- sapply(final_data$friends, count_friends)
-
-# Check the results
-head(final_data$friend_count)
-tail(final_data$friend_count)
-
-str(final_data)
-
-yelping_since_na_proportion <- sum(is.na(final_data$yelping_since))
-print(yelping_since_na_proportion)
-
-yelping_since_nonna_proportion <- sum(!is.na(final_data$yelping_since))
-print(yelping_since_nonna_proportion)
-
-# Way too many NA's
-final_data <- select(final_data, -yelping_since)
-
-
-str(final_data)
-
-
-# Split the categories string into individual categories
-split_categories <- strsplit(final_data$categories, ",")
-
-# Unlist and trim spaces
-all_categories <- trimws(unlist(split_categories))
-
-# Count the frequency of each category
-category_counts <- table(all_categories)
-
-# Print the counts
-print(category_counts)
-
-# This provides way too many i need to cut down... use factor 50 rule
-
-# Extract unique categories
-unique_categories <- unique(all_categories)
-
-# Count the number of unique categories
-num_unique_categories <- length(unique_categories)
-
-# Print the number of unique categories
-print(num_unique_categories)
-# there are 1307 unique categories. 
-
-str(final_data)
-
-# changed to categories branch
-branch_data <- final_data
-
-# Your code to filter categories
-split_categories <- strsplit(branch_data$categories, ",")
-all_categories <- trimws(unlist(split_categories))
-category_counts <- table(all_categories)
-threshold <- nrow(branch_data) / 50
-significant_categories <- names(category_counts[category_counts >= threshold])
-
-filter_categories <- function(category_list) {
-  filtered <- category_list[category_list %in% significant_categories]
-  return(paste(filtered, collapse = ", "))
-}
-
-branch_data$filtered_categories <- sapply(strsplit(branch_data$categories, ", "), filter_categories)
-
-head(final_data)
-head(branch_data)
-
-# Split the categories string into individual categories
-split_categories_branch <- strsplit(branch_data$filtered_categories, ",")
-all_categories_branch <- trimws(unlist(split_categories_branch))
-
-# Get unique categories
-unique_categories_branch <- unique(all_categories_branch)
-
-# Count the number of unique categories
-num_unique_categories_branch <- length(unique_categories_branch)
-
-# Print the number of unique categories
-print(num_unique_categories_branch)
-
-str(branch_data)
-
-final_data <- branch_data
-
-str(final_data)
-
-final_data <- select(final_data, -categories)
-
-str(final_data)
-
-# Check NA's in state
-na_count_state <- sum(is.na(final_data$state))
-print(na_count_state)
-
-# Check for NA's in each variable
-na_count_user_id <- sum(is.na(final_data$user_id))
-print(na_count_user_id)
-
-na_count_business_id <- sum(is.na(final_data$business_id))
-print(na_count_business_id)
-
-na_count_review_id <- sum(is.na(final_data$review_id))
-print(na_count_review_id)
-
-final_data <- final_data %>% rename(stars_reviews = stars.x)
-
-na_count_stars_reviews <- sum(is.na(final_data$star_reviews))
-print(na_count_stars_reviews)
-
-final_data <- final_data %>% rename(useful_reviews = useful.x)
-
-na_count_useful_reviews <- sum(is.na(final_data$useful_reviews))
-print(na_count_useful_reviews)
-
-final_data <- final_data %>% rename(funny_reviews = funny.x)
-
-na_count_funny_reviews <- sum(is.na(final_data$funny_reviews))
-print(na_count_funny_reviews)
-
-final_data <- final_data %>% rename(cool_reviews = cool.x)
-
-na_count_cool_reviews <- sum(is.na(final_data$cool_reviews))
-print(na_count_cool_reviews)
-
-
-na_count_text <- sum(is.na(final_data$text))
-print(na_count_text)
-
-na_count_latitude <- sum(is.na(final_data$latitude))
-print(na_count_latitude)
-
-na_count_longitude <- sum(is.na(final_data$longitude))
-print(na_count_longitude)
-
-
-final_data <- final_data %>% rename(stars_business = stars.y)
-
-na_count_stars_business <- sum(is.na(final_data$stars_business))
-print(na_count_stars_business)
-
-final_data <- final_data %>% rename(review_count_business = review_count.x)
-
-na_count_review_count_business <- sum(is.na(final_data$review_count_business))
-print(na_count_review_count_business)
-
-na_count_is_open <- sum(is.na(final_data$is_open))
-print(na_count_is_open)
-
-final_data <- final_data %>% rename(review_count_user = review_count.y)
-
-na_count_review_count_user <- sum(is.na(final_data$review_count_user))
-print(na_count_review_count_user)
-# too many NAs
-
-
-zero_count <- sum(final_data$review_count_user == 0, na.rm = TRUE)
-print(zero_count)
-
-one_count <- sum(final_data$review_count_user == 1, na.rm = TRUE)
-print(one_count)
-
-summary(final_data$review_count_user)
-
-# I thought NAs were 0s, but that doesn't seem to be the case, I will have to take out this variable as it is incomplete
-# This is a shame as there could be a relationship between the amount of reviews a user has written and 'stars'
-
-final_data <- select(final_data, -review_count_user)
-# Removed review_count_user
-
-final_data <- final_data %>% rename(useful_sentbyuser = useful.y)
-
-na_count_useful_sentbyuser <- sum(is.na(final_data$useful_sentbyuser))
-# Interestingly, the number of NAs is the same as in review count. 
-
-final_data <- final_data %>% rename(funny_sentbyuser = funny.y)
-
-na_count_funny_sentbyuser <- sum(is.na(final_data$funny_sentbyuser))
-print(na_count_funny_sentbyuser)
-
-zero_count_funny_sentbyuser <- sum(final_data$funny_sentbyuser == 0, na.rm = TRUE)
-print(zero_count_funny_sentbyuser)
-# Again the same....
-
-final_data <- final_data %>% rename(cool_sentbyuser = cool.y)
-
-na_count_cool_sentbyuser <- sum(is.na(final_data$cool_sentbyuser))
-print(na_count_cool_sentbyuser)
-# As NA is not the same as 0.=, these variables should be eliminated
-
-final_data <- select(final_data, -cool_sentbyuser, -useful_sentbyuser, -funny_sentbyuser)
-
-# Define a custom function to count the number of elite years
-count_elite_years <- function(elite_years) {
-  if (is.na(elite_years) || elite_years == "") {
-    # Return 0 if the entry is NA or an empty string
-    return(0)
-  } else {
-    # Split the string by commas and count the elements
-    years <- strsplit(elite_years, ",")[[1]]
-    return(length(years))
-  }
-}
-
-# Apply the function to the elite column
-final_data$elite_years_count <- sapply(final_data$elite, count_elite_years)
-
-# Check the results
-head(final_data$elite_years_count)
-
-summary(final_data$elite_years_count)
-
-highest_elite_years_count <- max(final_data$elite_years_count, na.rm = TRUE)
-print(highest_elite_years_count)
-
-table(final_data$elite_years_count)
-
-table(final_data$elite)
-
-# Now delete elite and friends, as they are no longer needed
-final_data <- select(final_data, -elite, -friends)
-
-# Back to counting NA
-na_count_fans <- sum(is.na(final_data$fans))
-print(na_count_fans)
-
-zero_count_fans <- sum(final_data$fans == 0, na.rm = TRUE)
-print(zero_count_fans)
-# Again the NA value is the same as above, making me think these functions were relatively new and hence didn't 
-# apply to older reviews/users
-
-# Still get rid of variable..
-final_data <- select(final_data, -fans)
-
-
-na_count_average_stars <- sum(is.na(final_data$average_stars))
-print(na_count_average_stars)
-
-summary(final_data$average_stars)
-
-na_count_average_stars_smalldata <- sum(is.na(user_data_small$average_stars))
-print(na_count_average_stars_smalldata)
-
-
-
-# Assuming you're merging on a column named 'user_id'
-# Replace 'user_id' with the actual key column name
-
-# I merged the dataset wrong, need to merge again...
-
-# Merging review data with user data
-review_user_merge <- merge(review_data_small, user_data_small, by = "user_id", all.x = TRUE)
-
-# Merging the above result with business data
-final_data2 <- merge(review_user_merge, business_data, by = "business_id", all.x = TRUE)
-
-na_count_average_stars2 <- sum(is.na(final_data2$average_stars))
-print(na_count_average_stars2)
-
-
 # It turns out i didn't merge the dataset wrong, but rather because the dataset was subsetted from a larger dataset
 # There were inconsistent pairings, in that there were user id's in the review_data_small dataset that were not 
 # Present in the user_data_small dataset. 
@@ -492,7 +87,7 @@ summary(final_data3$review_count_user)
 split_categories <- strsplit(final_data3$categories, ",")
 all_categories <- trimws(unlist(split_categories))
 category_counts <- table(all_categories)
-threshold <- nrow(branch_data) / 50
+threshold <- nrow(final_data3) / 50
 significant_categories <- names(category_counts[category_counts >= threshold])
 
 filter_categories <- function(category_list) {
@@ -660,4 +255,195 @@ print(na_count_review_count_business)
 na_count_is_open<- sum(is.na(final_data3$is_open))
 print(na_count_is_open)
 
+final_data3$state <- as.factor(final_data3$state)
 
+
+final_data3 <- select(final_data3, -filtered_categories)
+
+# Splitting Data
+library(caret)
+
+set.seed(1)  # Set seed for reproducibility
+indexes <- createDataPartition(final_data3$stars, p = 0.8, list = FALSE)
+training_data <- final_data3[indexes, ]
+test_data <- final_data3[-indexes, ]
+
+# Ensuring the test dataset has exactly 10,000 observations
+test_data <- test_data[sample(nrow(test_data), 10000), ]
+
+# Trying Sentiment Analysis
+install.packages("tidytext")
+library(tidytext)
+
+# Add an index column to training_data
+training_data$index <- row_number(training_data)
+
+# Sentiment Analysis (Revised)
+get_sentiments("bing") -> bing_sentiments
+train_sentiment <- training_data %>%
+  unnest_tokens(word, text) %>%
+  inner_join(bing_sentiments) %>%
+  group_by(index) %>%
+  summarize(sentiment_score = sum(ifelse(sentiment == "positive", 1, -1)))
+
+training_data <- left_join(training_data, train_sentiment, by = "index")
+
+str(training_data)
+
+na_count_sentiment_score_training<- sum(is.na(training_data$sentiment_score))
+print(na_count_sentiment_score_training)
+
+# Check for NA values in the training dataset
+sum(is.na(training_data))
+
+# Create a copy of the dataset excluding rows with any NAs
+training_data_no_na <- training_data[complete.cases(training_data), ]
+
+# Check dimensions of the new dataset
+dim(training_data_no_na)
+
+# Ensure no NA values are present
+sum(is.na(training_data_no_na))
+
+training_data_no_na$text <- NULL
+
+# Exclude ID variables
+model_data <- training_data_no_na[, !(names(training_data_no_na) %in% c("business_id", "user_id", "review_id"))]
+model_data$index <- NULL
+
+# Now trying to model
+
+library(glmnet)
+
+# Prepare the data for the model
+x <- model.matrix(stars ~ . - 1, data = model_data)  # -1 to exclude the intercept
+y <- model_data$stars
+
+# Fit the Lasso model with cross-validation
+set.seed(1)  # For reproducibility
+cv_model <- cv.glmnet(x, y, alpha = 1, family = "gaussian", nfolds = 10)  # nfolds for k-fold cross-validation
+
+# The best lambda value
+best_lambda <- cv_model$lambda.min
+
+# Check the model summary
+print(cv_model)
+
+# Model with sentiment analysis
+saveRDS(cv_model, file = "lasso_cv_model.rds")
+
+
+
+
+# Exclude the 'sentiment_score' column
+model_data_without_sentiment <- model_data[, !(names(model_data) %in% c("sentiment_score"))]
+model_data_without_sentiment$index <- NULL
+
+# Prepare the model matrix
+x_without_sentiment <- model.matrix(stars ~ . - 1, data = model_data_without_sentiment)  # -1 to exclude the intercept
+y_without_sentiment <- model_data_without_sentiment$stars
+
+# Fit the Lasso model with cross-validation
+set.seed(1)  # For reproducibility
+cv_model_without_sentiment <- cv.glmnet(x_without_sentiment, y_without_sentiment, alpha = 1, family = "gaussian", nfolds = 10)
+
+# Check the model
+print(cv_model_without_sentiment)
+
+saveRDS(cv_model_without_sentiment, file = "lasso_cv_model_without_sentiment.rds")
+
+# Now test on test data
+
+# Add an index column to test_data
+test_data$index <- row_number(test_data)
+
+# Sentiment Analysis 
+get_sentiments("bing") -> bing_sentiments
+test_sentiment <- test_data %>%
+  unnest_tokens(word, text) %>%
+  inner_join(bing_sentiments) %>%
+  group_by(index) %>%
+  summarize(sentiment_score = sum(ifelse(sentiment == "positive", 1, -1)))
+
+test_data <- left_join(test_data, test_sentiment, by = "index")
+
+
+sum(is.na(test_data))
+
+test_data_no_na <- test_data[complete.cases(test_data), ]
+
+test_data_no_na$index <- NULL
+
+# Create a copy without the 'sentiment_score' column
+no_sentiment_test_data <- test_data_no_na[, !(names(test_data_no_na) %in% c("sentiment_score"))]
+
+
+# Testing the model with sentiment analysis
+cv_model <- readRDS("lasso_cv_model.rds")
+
+# Prepare the model matrix for the test data
+no_ids_test_data <- test_data_no_na[, !(names(test_data_no_na) %in% c("business_id", "user_id", "review_id"))]
+
+no_ids_test_data$text <- NULL
+
+coef(cv_model)
+
+# Prepare the model matrix for the test data
+x_test <- model.matrix(~ . - 1 - stars, data = no_ids_test_data)  
+
+predictions_min <- predict(cv_model, newx = x_test, s = "lambda.min")
+
+
+y_test <- no_ids_test_data$stars
+
+# Predict Model using min. lambda
+mse_cv_model_min <- mean((y_test - predictions_min)^2)
+
+# Evaluation 
+print(mse_cv_model_min)
+# 1.024913
+
+r_squared_cv_model_min <- 1 - sum((y_test - predictions_min)^2) / sum((y_test - mean(y_test))^2)
+print(r_squared_cv_model_min)
+# 0.5248089
+
+# Predict Model using 1se lambda
+predictions_1se <- predict(cv_model, newx = x_test, s = "lambda.1se")
+
+mse_cv_model_1se <- mean((y_test - predictions_1se)^2)
+print(mse_cv_model_1se)
+# 1.035778
+
+r_squared_cv_model_1se <- 1 - sum((y_test - predictions_1se)^2) / sum((y_test - mean(y_test))^2)
+print(r_squared_cv_model_1se)
+# 0.5197715
+
+# load cv_model_no_sentiment
+cv_model_no_sentiment <- readRDS("lasso_cv_model_without_sentiment.rds")
+
+# Test cv_model_no_sentiment with min. Lambda
+
+# Create a copy of the dataset without the 'sentiment_score' column
+test_without_sentiment <- no_ids_test_data[, !(names(no_ids_test_data) %in% c("sentiment_score"))]
+
+x_test2 <- model.matrix(~ . - 1 - stars, data = test_without_sentiment)  
+predictions_no_sentiment_min <- predict(cv_model_no_sentiment, newx = x_test2, s = "lambda.min")
+
+mse_cv_model_no_sentiment_min <- mean((y_test - predictions_no_sentiment_min)^2)
+print(mse_cv_model_no_sentiment_min)
+# 1.164779
+
+r_squared_cv_model_no_sentiment_min <- 1 - sum((y_test - predictions_no_sentiment_min)^2) / sum((y_test - mean(y_test))^2)
+print(r_squared_cv_model_no_sentiment_min)
+# 0.4599614
+
+# Test cv_model_no_sentiment with 1se Lambda
+predictions_no_sentiment_1se <- predict(cv_model_no_sentiment, newx = x_test2, s = "lambda.1se")
+
+mse_cv_model_no_sentiment_1se <- mean((y_test - predictions_no_sentiment_1se)^2)
+print(mse_cv_model_no_sentiment_1se)
+#  1.178501
+
+r_squared_cv_model_no_sentiment_1se <- 1 - sum((y_test - predictions_no_sentiment_1se)^2) / sum((y_test - mean(y_test))^2)
+print(r_squared_cv_model_no_sentiment_1se)
+# 0.4535993
