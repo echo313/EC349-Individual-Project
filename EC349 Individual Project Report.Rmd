@@ -51,7 +51,6 @@ Education Policy and Quality Team
 
 Academic Integrity (warwick.ac.uk)
 
-This is the end of the statement to be included.
 
 <div style="page-break-after: always;"></div>
 
@@ -84,27 +83,70 @@ This phase of the methodology involves accurately defining the task and identify
 
 #### **Data Understanding/Preparation**
 
-The datasets were large 
+Data understanding/preparation involves exploring and cleaning the data so that it becomes ready for modelling.
+As I had a regression model in mind, it was integral that all variables were either dummy or continuous. The data was mostly clean, but there were variables where the data contained too many NA variables to add to the model. Most notably, the "attributes" column from business_data was a variable describing the various characteristics of the business. The variable had 4 unique observations: "True", "False", "NA" , "None". The majority of the observations were recorded as "NA", providing insufficient information for most observations. Furthermore, it was difficult to circumvent this using statistical methods as the answers themselves, "False", "NA", "None" were dubious in their meaning. The answers "None" and "False" could be argued to mean the same thing. Distributing "NA" mimicking the distribution observed from "True":"False" was also problematic as "NA" could also be interpreted as "False", skewing the true distribution. 
+
+<br>
+<br>
 
 
 
 #### **Modelling/Evaluation**
 
-At first glance, the most significant predictor would be the review itself. However, as the review is comprised of text it becomes difficult to implement in a regression model. To 
-
-
-
-
-
-
-
-
-
-
-
-#### **Appendix**
+At first glance, the most significant predictor would be thought to be the review itself. However, as the review is comprised of text it becomes difficult to implement in a regression model. To utilize this "text" variable, I ran a sentiment analysis using the "tidytext" package. Sentiment analysis involves breaking down the text to certain keywords that are matched to a pre-defined 'sentiment lexicon'. This gives a sentiment score for each keyword, which is then aggregated to give the final score of an observation from the "text" column. This has obvious limitations in that text can often be nuanced or even have a dimension of duality. Such occurrences would add noise to the model as the "sentiment score" doesn't accurately reflect the sentiment of the text, potentially worsening its performance. However, due to the importance of the text and the lack of other significant variables in the review data, it was included in my original model. To test whether sentiment analysis was beneficial I ran a copy of my original model, which was identical apart from the exclusion of sentiment_score. 
 
 <br>
+
+For my model, I chose to run a regression model with Lasso estimators. Shrinkage estimators were necessary as I was running a high-dimensional model with 29 predictors, I was risking potentially over fitting and capturing noise. Lasso estimators were chosen over Ridge, as I had included 29 predictors, some of which I suspected may not be significant. As such, Lasso would serve as a statistical filtering system, due to its ability to shrink certain coefficients to 0. A disadvantage of Lasso estimators is that it can be unstable when the predictors may be highly correlated. In my model, I have several predictors that may suffer from multicollinearity such as "state", "latitude" and "longitude", which by definition will be correlated to each other. In this situation Lasso tends to arbitrarily selecting one feature over another and handing over its explanatory power. This would change the meaning of this coefficient entirely, making it difficult to interpret. However, as I was only aiming for prediction, this issue could be disregarded as I would be gaining a decrease in variance with Lasso variables implying a more robust model. As I merged "user_data", "business_data" and "review_data_small", the model would take the form of 
+<br>
+$$
+y = {Review Data} + {User Characteristics} + {Business Charactersitics} + ϵ
+$$
+<br> 
+To chose Lambda for my Lasso estimator, I implemented 10-fold cross validation. This is done by randomly subsetting the training sample into 10 different ones, where one is chosen as the validation set and all others are used as training data. This process is repeated 10 times, with the best performing lambda in terms of MSE is selected as the optimal lambda. This allows the model to be robust and decreases the risk of a single random distribution of a training dataset influencing my entire model. For the purpose of my model, I found that the lambda chosen,i.e. significantly changed the amount of significant predictors. 
+
+<br>
+
+<div align="center">
+
+|  | Lasso (lambda.min) | Lasso (lambda.1se) | Lasso w/o sentiment (lambda.min) | Lasso w/o sentiment (lambda.1se) |
+|---------|---------|---------|---------|---------|
+| MSE | 1.024913 | 1.035778| 1.164779 | 1.178501 |
+| R^2 | 0.5248089| 0.5197715| 0.4599614| 0.4535993|
+
+
+</div>
+
+<br>
+
+As my dataset was a subset of the larger dataset, my initial predictions were that the robust lambda chosen with the 1 s.e. criterion would outperform the min. MSE criterion, as I was concerned about overfitting. However, these metrics show that the training data was fairly similar to the test data and therefore performance was peaked with minimum MSE. Furthermore, the sentiment analysis was beneficial in predicting the "stars" of a review, despite its limitations. The best performing model, Lasso with minimum MSE criteria and sentiment analysis, was able to explain around 52% of the variance, which could be said to have a moderate performance. However, given that the scale of the data is from 1-5, a squared deviation of around 1 can be alarming. Especially since the ratings are given as integers, meaning the model could be said to be off by 25% on average. 
+
+<br>
+
+#### **Challenges**
+
+The most frustrating challenge was during data preparation, when I encountered that many of my columns had "NA" observations after merging. This was a problem as these "NA" values didn't appear in the raw dataset. The explanation for this occurrence was that the 2 "small" datasets that I had merged were subsets of a larger dataset. Which meant that there were missing user ID/review ID's for both datasets that were only present in  the larger dataset. To resolve, I merged the small review dataset with the original user dataset so that all user ID's in the review dataset were accounted for. However, I was unable to solve the root of my problems; the computational limitations of my device. This was a common theme throughout this project as many methods were implemented to circumvent the limited capabilities of my device only to cause different problems. Another example was when I had tried to compute the "categories" variable as one of the predictors for my model. Mindful that the predictor would produce many parameters I removed observations using the factor 50 rule for computational and statistical reasons. However, even with removal of variables, the matrix was too complex for my device and I was unable to implement it into my model. 
+
+<br>
+<br>
+
+#### **References**
+
+
+Alwosheel, A., van Cranenburgh, S. and Chorus, C.G. (2018) ‘Is your dataset big enough? sample size requirements when using artificial neural networks for discrete choice analysis’, *Journal of Choice Modelling*, 28, pp. 167–182. doi:10.1016/j.jocm.2018.07.002. 
+
+Kalsbeek, R. (2020) *Understanding the different types of analytics: Descriptive, diagnostic, predictive, and prescriptive, Iteration Insights.* Available at: https://iterationinsights.com/article/understanding-the-different-types-of-analytics/#:~:text=There%20are%20different%20types%20of,levels%20of%20these%20four%20categories. (Accessed: 30 November 2023). 
+
+Logallo, N. (2019) *Data science methodology 101, Medium.* Available at: https://towardsdatascience.com/data-science-methodology-101-ce9f0d660336 (Accessed: 30 November 2023). 
+
+Robinson, J.S. and D. (2022) *Welcome to text mining with r: Text mining with R, A Tidy Approach.* Available at: https://www.tidytextmining.com/ (Accessed: 30 November 2023). 
+
+Rollins, J.B., 2015. *Foundational Methodology for Data Science.* IBM Analytics White Paper.
+
+Yelp (2023) *Yelp Dataset, Yelp dataset.* Available at: https://www.yelp.com/dataset/documentation/main (Accessed: 30 November 2023). 
+
+
+
 
 
 
